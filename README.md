@@ -1,6 +1,4 @@
-# MATH1318 Time Series Analysis Projects
-
-This repository contains three projects completed for the MATH1318 Time Series Analysis course. The projects are based on the analysis of various time series data.
+# Time Series Analysis Projects in R
 
 ## Project Structure
 ```
@@ -34,13 +32,13 @@ This repository contains three projects completed for the MATH1318 Time Series A
 ## Projects
 
 + *AS1*
-This project involves analysis of the return of a share market trader's investment portfolio. The dataset represents the return (in AUD100,000) of a trader's portfolio, comprising 127 observations from the same year and on consecutive trading days. The objective is to find the best fitting model among the linear, quadratic, cosine, cyclical or seasonal trend models and make predictions for the next 15 trading days.
+This project involves analysis of the return on a share market trader's investment portfolio. The dataset represents a trader's portfolio's return (in AUD100,000), comprising 127 observations from the same year and on consecutive trading days. The objective is to find the best fitting model among the linear, quadratic, cosine, cyclical, or seasonal trend models and make predictions for the next 15 trading days.
 
 + *AS2*
-In this project, the yearly Arctic sea ice minimum extent (million square km) from 1979 to 2022 is analyzed. This data is obtained from NASA. The task involves proposing a set of possible ARIMA(p, d, q) models using model specification tools and fitting the models to find parameter estimates.
+This project analyzes the yearly Arctic sea ice minimum extent (million square km) from 1979 to 2022. This data is obtained from NASA. The task involves proposing a set of possible ARIMA(p, d, q) models using model specification tools and fitting the models to find parameter estimates.
 
 + *AS3 - Final Project*
-For the final project, a time series dataset is selected, a research question is set, the data is analysed and predictions for the next 10 units of time are made. This involves descriptive analysis, visualization, model specification, model fitting and selection, diagnostic checking and interpretation of results.
+For the final project, a time series dataset is selected, a research question is set, the data is analyzed and predictions for the next 10 units of time are made. This involves descriptive analysis, visualization, model specification, model fitting and selection, diagnostic checking and interpretation of results.
 
 ## How to Use
 + Clone the repository or download the projects.
