@@ -27,7 +27,6 @@ This repository contains three projects completed for the MATH1318 Time Series A
 │   │   │   └── cleaned_weatherAUS.csv
 │   │   └── raw
 │   │       └── weatherAUS.csv
-│   └── figures
 ├── LICENSE
 └── README.md
 ```
@@ -44,7 +43,7 @@ In this project, the yearly Arctic sea ice minimum extent (million square km) fr
 For the final project, a time series dataset is selected, a research question is set, the data is analysed and predictions for the next 10 units of time are made. This involves descriptive analysis, visualization, model specification, model fitting and selection, diagnostic checking and interpretation of results.
 
 ## How to Use
-Clone the repository or download the projects.
-Open the R markdown files in your R environment.
-Run the R scripts or notebooks to replicate the analysis.
-You can modify the code as needed.
++ Clone the repository or download the projects.
++ Open the R markdown files in your R environment.
++ Run the R scripts or notebooks to replicate the analysis.
++ You can modify the code as needed.
