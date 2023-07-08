@@ -1,7 +1,0 @@
-"0",""
-"0","#--- Task 2 ---"
-"0","mu = 0 "
-"0","sigma = 1 #0.1 #sqrt{Var}"
-"0","n = 48"
-"0",""
-"0","curve(dnorm(x, mean = mu, sd = sigma), from = -4, to = 4) # Visualise the pdf of normal distribution for discussions"

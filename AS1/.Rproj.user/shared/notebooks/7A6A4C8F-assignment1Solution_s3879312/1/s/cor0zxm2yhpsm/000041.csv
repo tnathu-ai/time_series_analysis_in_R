@@ -1,3 +1,0 @@
-"0","plot(ts_portfolio, xlim= c(1,127+h+1), ylim = c(-50,157),"
-"0","ylab = ""Return (AUD100,000)"","
-"0","main = ""Sample forecasts from Quadratic Model for the next 15 trading days"")"

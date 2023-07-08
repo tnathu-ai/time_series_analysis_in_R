@@ -1,3 +1,0 @@
-"0","rm(list=ls()) "
-"0","library(TSA)"
-"0","library(tseries)"
