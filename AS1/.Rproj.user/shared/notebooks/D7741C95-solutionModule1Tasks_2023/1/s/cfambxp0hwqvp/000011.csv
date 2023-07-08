@@ -1,0 +1,8 @@
+"0",""
+"0","y = rnorm(n, mu, sigma) # Generate random data from the given normal distribution"
+"0","class(y)"
+"1","[1]"
+"1"," ""numeric"""
+"1","
+"
+"0","plot(y)"

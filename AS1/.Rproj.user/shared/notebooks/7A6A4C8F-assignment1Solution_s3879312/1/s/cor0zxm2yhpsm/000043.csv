@@ -1,0 +1,1 @@
+"0","lines(ts(as.vector(quadratic_model_prediction[,3]), start = 127), col=""blue"", type=""l"")"

@@ -1,0 +1,244 @@
+rm(list=ls()) 
+library(TSA)
+
+#--- Task 1 --- 
+# The dataset ‘wages’ of the TSA package contains monthly values of the average hourly wages (in dollars) for 
+# workers in the U.S. apparel and textile products industry for July 1981 through June 1987.
+
+data("wages")
+class(wages)
+
+plot(wages,type='l',ylab='Average hourly wages ')
+points(y=wages,x=time(wages),pch=as.vector(season(wages)))
+
+summary(wages)
+
+# Fit the linear model
+model1 = lm(wages ~ time(wages)) # label the linear trend model as model1
+summary(model1)
+
+plot(wages,type='o',ylab='y')
+abline(model1)
+
+# Residual analysis
+res.model1 = rstudent(model1)
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model1, x = as.vector(time(wages)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from linear model.")
+hist(res.model1,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model1, main = "QQ plot of standardised residuals.")
+qqline(y=res.model1, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model1)
+acf(res.model1, main = "ACF of standardized residuals.")
+# pacf(res.model1, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+# Fit the quadratic model
+t = time(wages)
+t2 = t^2
+model2 = lm(wages~ t + t2) # label the quadratic trend model as model1
+summary(model2)
+
+plot(ts(fitted(model2)), ylim = c(min(c(fitted(model2), as.vector(wages))), max(c(fitted(model2),as.vector(wages)))),
+     ylab='y' , main = "Fitted quadratic curve to wages series", type="l",lty=2,col="red")
+lines(as.vector(wages),type="o")
+
+# Residual analysis
+res.model2 = rstudent(model2)
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model2, x = as.vector(time(wages)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from quadratic model.")
+hist(res.model2,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model2, main = "QQ plot of standardised residuals.")
+qqline(y=res.model2, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model2)
+acf(res.model2, main = "ACF of standardized residuals.")
+# pacf(res.model2, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+#--- Task 2 --- 
+# The dataset “beersales” of the TSA package contains monthly U.S. beer sales (in millions of barrels) 
+# for the period January 1975 through December 1990.
+
+data("beersales")
+plot(beersales,type='o',ylab='Monthly U.S. beer sales')
+
+
+plot(beersales,type='l',ylab='Sales')
+points(y=beersales,x=time(beersales), pch=as.vector(season(beersales)))
+
+acf(beersales, lag.max = 70)
+
+summary(beersales)
+
+# Fit seasonal model
+month.=season(beersales) # period added to improve table display and this line sets up indicators
+model3=lm(beersales~month.-1) # -1 removes the intercept term
+summary(model3)
+
+res.model3 = rstudent(model3)
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model3, x = as.vector(time(beersales)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from seasonal model.")
+points(y=res.model3,x=time(beersales), pch=as.vector(season(beersales)))
+hist(res.model3,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model3, main = "QQ plot of standardised residuals.")
+qqline(y=res.model3, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model3)
+acf(res.model3, main = "ACF of standardized residuals.")
+# pacf(res.model3, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+# Fit quadratic model
+t = time(beersales)
+t2 = t^2
+model4 = lm(beersales~ t + t2) # label the quadratic trend model as model1
+summary(model4)
+
+plot(ts(fitted(model4)), ylim = c(min(c(fitted(model4), as.vector(beersales))), max(c(fitted(model4),as.vector(beersales)))),
+     ylab='y' , main = "Fitted quadratic curve to beersales series", type="l",lty=2,col="red")
+lines(as.vector(beersales),type="o")
+
+res.model4 = rstudent(model4)
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model4, x = as.vector(time(beersales)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from quadratic model.")
+points(y=res.model4,x=time(beersales), pch=as.vector(season(beersales)))
+hist(res.model4,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model4, main = "QQ plot of standardised residuals.")
+qqline(y=res.model4, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model4)
+acf(res.model4, main = "ACF of standardized residuals.")
+# pacf(res.model4, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+# Fit seasonal plus quadratic time trend model
+model5 = lm(beersales~ month. + t + t2 -1) # label the quadratic trend model as model1
+summary(model5)
+
+plot(ts(fitted(model5)), ylim = c(min(c(fitted(model5), as.vector(beersales))), max(c(fitted(model5),as.vector(beersales)))),
+     ylab='y' , main = "Fitted seasonal plus quadratic curve to beersales series", type="l",lty=2,col="red")
+lines(as.vector(beersales),type="o")
+
+res.model5 = rstudent(model5)
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model5, x = as.vector(time(beersales)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from quadratic model.")
+points(y=res.model5,x=time(beersales), pch=as.vector(season(beersales)))
+hist(res.model5,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model5, main = "QQ plot of standardised residuals.")
+qqline(y=res.model5, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model5)
+acf(res.model5, main = "ACF of standardized residuals.")
+# pacf(res.model5, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+#--- Task 3 ---
+# Load the monthly commercial landings dataset of US-NMFS from the file “NMFS_Landings.csv  download” into the workspace of R. 
+
+NMFS_Landings <- read.csv("/Users/haydardemirhan/Documents/MATH1318_TimeSeries/tasks/Task2/NMFS_Landings.csv")
+class(NMFS_Landings)
+head(NMFS_Landings)
+
+# Convert data into a time series object
+NMFS_Landings.ts = matrix(NMFS_Landings$Metric_Tons, nrow = 25, ncol = 12)
+NMFS_Landings.ts = as.vector(t(NMFS_Landings.ts))
+NMFS_Landings.ts = ts(NMFS_Landings.ts,start=c(1991,1), end=c(2015,12), frequency=12)
+class(NMFS_Landings.ts)
+
+NMFS_Landings.ts
+plot(NMFS_Landings.ts,ylab='Landings in metric tons',xlab='Year',type='o', main = "Time series plot of monthly landings in metric tons.")
+
+plot(NMFS_Landings.ts,ylab='Landings in metric tons',xlab='Year',main = "Time series plot of monthly landings in metric tons.")
+points(y=NMFS_Landings.ts,x=time(NMFS_Landings.ts), pch=as.vector(season(NMFS_Landings.ts)))
+
+plot(y=NMFS_Landings.ts,x=zlag(NMFS_Landings.ts),ylab='Landings in metric tons', xlab='Previous Year Landings in metric tons' , main = "Scatter plot of neighboring landings in metric tons")
+
+summary(NMFS_Landings.ts) 
+
+y = NMFS_Landings.ts              # Read the Landings in metric tons data into y
+x = zlag(NMFS_Landings.ts)        # Generate first lag of the Spawners series
+index = 2:length(x)          # Create an index to get rid of the first NA value and the last 5 missing values in x
+cor(y[index],x[index]) 
+
+# Fit linear model
+model.NMFS_Landings.ln = lm(NMFS_Landings.ts~time(NMFS_Landings.ts)) 
+summary(model.NMFS_Landings.ln)
+
+plot(NMFS_Landings.ts,type='o',ylab='y')
+abline(model.NMFS_Landings.ln)
+
+res.model.NMFS_Landings.ln = rstudent(model.NMFS_Landings.ln)
+
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(3,2))
+plot(y = res.model.NMFS_Landings.ln, x = as.vector(time(NMFS_Landings.ts)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from linear model.")
+points(y=res.model.NMFS_Landings.ln,x=time(NMFS_Landings.ts), pch=as.vector(season(NMFS_Landings.ts)))
+hist(res.model.NMFS_Landings.ln,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model.NMFS_Landings.ln, main = "QQ plot of standardised residuals.")
+qqline(y=res.model.NMFS_Landings.ln, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model.NMFS_Landings.ln)
+acf(res.model.NMFS_Landings.ln, main = "ACF of standardized residuals.")
+pacf(res.model.NMFS_Landings.ln, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+# Fit quadratic model
+t = time(NMFS_Landings.ts)
+t2 = t^2
+model.NMFS_Landings.qa = lm(NMFS_Landings.ts~ t + t2) 
+summary(model.NMFS_Landings.qa)
+
+plot(ts(fitted(model.NMFS_Landings.qa)), ylim = c(min(c(fitted(model.NMFS_Landings.qa),
+    as.vector(NMFS_Landings.ts))), max(c(fitted(model.NMFS_Landings.qa),as.vector(NMFS_Landings.ts)))),
+    ylab='y' , main = "Fitted quadratic curve to monthly landings in metric tons series", type="l",lty=2,col="red")
+lines(as.vector(NMFS_Landings.ts),type="o")
+
+res.model.NMFS_Landings.qa = rstudent(model.NMFS_Landings.qa)
+
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model.NMFS_Landings.qa, x = as.vector(time(NMFS_Landings.ts)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from quadratic model.")
+points(y=res.model.NMFS_Landings.qa,x=time(NMFS_Landings.ts), pch=as.vector(season(NMFS_Landings.ts)))
+hist(res.model.NMFS_Landings.qa,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model.NMFS_Landings.qa, main = "QQ plot of standardised residuals.")
+qqline(y=res.model.NMFS_Landings.qa, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model.NMFS_Landings.qa)
+acf(res.model.NMFS_Landings.qa, main = "ACF of standardized residuals.")
+# pacf(res.model.NMFS_Landings.qa, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+# Fit harmonic model
+har.=harmonic(NMFS_Landings.ts,1)
+month.=season(NMFS_Landings.ts)
+model.NMFS_Landings.har=lm(NMFS_Landings.ts~ har. + t + t2)
+summary(model.NMFS_Landings.har)
+
+plot(ts(fitted(model.NMFS_Landings.har)), ylim = c(min(c(fitted(model.NMFS_Landings.har),
+     as.vector(NMFS_Landings.ts))), max(c(fitted(model.NMFS_Landings.har),as.vector(NMFS_Landings.ts)))),
+     ylab='y' , main = "Fitted quadratic curve to random walk data", type="l",lty=2,col="red")
+lines(as.vector(NMFS_Landings.ts),type="o")
+
+res.model.NMFS_Landings.har = rstudent(model.NMFS_Landings.har)
+
+# win.graph(width=4.875, height=2.5,pointsize=8) # Use this for Windows computers
+x11() # Use this for Mac computers
+par(mfrow=c(2,2))
+plot(y = res.model.NMFS_Landings.har, x = as.vector(time(NMFS_Landings.ts)),xlab = 'Time', ylab='Standardized Residuals',type='l',main = "Standardised residuals from harmonic model.")
+points(y=res.model.NMFS_Landings.har,x=time(NMFS_Landings.ts), pch=as.vector(season(NMFS_Landings.ts)))
+hist(res.model.NMFS_Landings.har,xlab='Standardized Residuals', main = "Histogram of standardised residuals.")
+qqnorm(y=res.model.NMFS_Landings.har, main = "QQ plot of standardised residuals.")
+qqline(y=res.model.NMFS_Landings.har, col = 2, lwd = 1, lty = 2)
+shapiro.test(res.model.NMFS_Landings.har)
+acf(res.model.NMFS_Landings.har, main = "ACF of standardized residuals.")
+# pacf(res.model.NMFS_Landings.har, main = "PACF of standardized residuals.")
+par(mfrow=c(1,1))
+
+
+

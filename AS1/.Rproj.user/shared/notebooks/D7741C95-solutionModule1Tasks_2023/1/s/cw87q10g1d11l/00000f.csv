@@ -1,0 +1,5 @@
+"0",""
+"0","#--- Task 4 ---"
+"0",""
+"0","MelbourneMonthlyRainfallRaw = read.csv(""MelbourneMonthlyRainfall.csv"",header = FALSE)"
+"0","MelbourneMonthlyRainfallRaw"

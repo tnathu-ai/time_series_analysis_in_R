@@ -1,0 +1,9 @@
+"0","# Fit linear, quadratic, cosine, cyclical, and seasonal trend models"
+"0","linear_model <- lm(time_series ~ time(time_series))"
+"0","quadratic_model <- lm(time_series ~ time(time_series) + I(time(time_series)^2))"
+"0","cosine_model <- lm(time_series ~ cos(2*pi*time(time_series)) + sin(2*pi*time(time_series)))"
+"0","cyclical_model <- lm(time_series ~ sin(2*pi*time(time_series)) + cos(2*pi*time(time_series)))"
+"0","seasonal_model <- decompose(time_series, type = ""multiplicative"")"
+"2","Error in decompose(time_series, type = ""multiplicative"") : 
+  time series has no or less than 2 periods
+"

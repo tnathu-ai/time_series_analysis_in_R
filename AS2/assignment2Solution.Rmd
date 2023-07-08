@@ -1,0 +1,329 @@
+---
+title: "assignment2Solution_s3879312"
+author: "Thu Tran"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r import libraries}
+rm(list=ls()) 
+library(TSA)
+library(tseries)
+library(ggplot2)
+library(lmtest)
+library(forecast)
+```
+
+
+```{r data overview}
+# read data into a data frame
+arctic_sea_ice <- read.csv("assignment2Data2023.csv", header = TRUE)
+# display first 3 rows of data frame
+head(arctic_sea_ice, n=3)
+# class of the data
+class(arctic_sea_ice)
+# display summary statistics
+summary(arctic_sea_ice)
+```
+
+
+```{r Create the ACF plot for finding the frequency - no need since this is annual data}
+# Create the ACF plot with custom title, y-axis label, x-axis label, and color
+acf(arctic_sea_ice, main = "ACF of Arctic Sea Ice Extent")
+# confirm the frequency
+frequency(arctic_sea_ice)
+```
+
+
+```{r convert data frame to time series (ts) object}
+# Create a vector of the Arctic sea ice minimum extent values
+arctic_sea_ice_ts <- arctic_sea_ice$Arctic.Sea.Ice.Extent..million.square.km.
+# Convert the vector to a time series object
+arctic_sea_ice_ts <- ts(arctic_sea_ice_ts, start = 1979, end = 2022, frequency = 1)
+class(arctic_sea_ice_ts)
+arctic_sea_ice_ts
+```
+
+
+```{r time series plot}
+plot(arctic_sea_ice, type='o', main = "Time series plot of Arctic Sea Ice Minimum Extent (1979-2022)", ylab = "Million square km", xlab = "Year", col="blue")
+```
+
+```{r normality test of the original time series data}
+qqnorm(y = arctic_sea_ice_ts, main = "QQ plot of the Acrtic Extent series", col = "blue")
+qqline(y = arctic_sea_ice_ts, col = 2, lwd = 1, lty = 2)
+shapiro.test(arctic_sea_ice_ts)
+# p-value = 0.0373 
+```
+
+
+
+```{r scatter plot to show the relationship between pairs of consecutive Arctic Sea Ice Minimum Extent}
+plot(y=arctic_sea_ice_ts,x=zlag(arctic_sea_ice_ts),ylab='Million square km', xlab='Previous Year Arctic Sea Ice Minimum Extent (million square km)', main = "Scatter plot of Arctic Sea Ice Minimum Extent in consequtive years", col="blue")
+
+# the correlation show linear relationship between pairs of consecutive Arctic Sea Ice Minimum Extent
+y = arctic_sea_ice_ts             # Read the annual data into y
+x = zlag(arctic_sea_ice_ts)       # Generate first lag of the annual series
+index = 2:length(x)    # Create an index to get rid of the first NA value in x
+cor(y[index],x[index]) # Calculate correlation between numerical values in x and y
+```
+
+
+
+```{r Stationary Check: ACF plot and ACF numerical representation}
+# Create the ACF plot: slowly decay trend
+acf(arctic_sea_ice_ts, main = "ACF of Arctic Sea Ice Extent Time Series")
+
+# convert the ACF plot into a numerical representation
+# Calculate ACF values for the Arctic Sea Ice Extent Time Series
+acf_values <- acf(arctic_sea_ice_ts, plot = FALSE)
+# Print the ACF values
+acf_values$acf
+```
+
+
+```{r Stationary Check: PACF plot and PACF numerical representation}
+# large first lag in the pacf
+pacf(arctic_sea_ice_ts, main = "PACF of Arctic Sea Ice Minimum Extent Time Series")
+
+# convert the ACF plot into a numerical representation
+# Calculate PACF values for the Arctic Sea Ice Minimum Extent Time Series
+pacf_values <- pacf(arctic_sea_ice_ts, plot = FALSE)
+# Print the PACF values
+pacf_values$acf
+```
+
+```{r Stationary Check: of the original time series data}
+adf.test(arctic_sea_ice_ts)
+# p-value = 0.4433: non-stationary
+```
+
+
+
+
+```{r Box-Cox transformation}
+BC <- suppressWarnings(BoxCox.ar(y = arctic_sea_ice_ts, lambda = seq(-2, 2, 0.01)))
+title(main = "Log-likelihood versus the values of lambda for Acrtic Extent")
+
+BC$ci # Values of the first and third vertical lines
+
+# To find the lambda value of the middle vertical line
+lambda <- BC$lambda[which(max(BC$loglike) == BC$loglike)]
+lambda
+```
+
+
+```{r}
+# Apply Box-Cox transformation using the optimal lambda value 
+BC_arctic_sea_ice_ts <- ((arctic_sea_ice_ts^lambda) - 1) / lambda
+
+# Set the output file and dimensions (width, height) in pixels
+png("BC_arctic_sea_ice_ts.png", width = 1200, height = 600)
+
+# Set up the layout for side-by-side plots
+par(mfrow = c(1, 2))
+
+# Create a time series plot of the original data
+plot(arctic_sea_ice_ts,
+     type = "l",
+     col = "black",
+     main = "Original Arctic Sea Ice Minimum Extent Time Series",
+     xlab = "Year",
+     ylab = "Arctic Sea Ice Minimum Extent (million square km)")
+
+# Create a time series plot of the Box-Cox transformed data
+plot(BC_arctic_sea_ice_ts,
+     type = "l",
+     col = "blue",
+     main = "Box-Cox transformation Arctic Sea Ice Minimum Extent Time Series",
+     xlab = "Year",
+     ylab = "Box-Cox transformation Arctic Sea Ice Minimum Extent (million square km)")
+
+# Reset the layout
+par(mfrow = c(1, 1))
+```
+
+```{r Transformation improve normality?}
+qqnorm(y = BC_arctic_sea_ice_ts, main = "QQ plot of the Acrtic Extent series", col = "blue")
+qqline(y = BC_arctic_sea_ice_ts, col = 2, lwd = 1, lty = 2)
+shapiro.test(BC_arctic_sea_ice_ts)
+```
+
+
+```{r First Difference}  
+# First Difference 
+first_diff_arctic_sea_ice <- diff(arctic_sea_ice_ts, differences = 1)
+
+# Set the output file and dimensions (width, height) in pixels
+png("first_differenced_arctic_sea_ice_plot.png", width = 1200, height = 600)
+# Set up the layout for side-by-side plots
+par(mfrow = c(1, 2))
+# Create a time series plot of the original data
+plot(arctic_sea_ice_ts,
+     type = "l",
+     col = "black",
+     main = "Original Arctic Sea Ice Minimum Extent Time Series",
+     xlab = "Year",
+     ylab = "Arctic Sea Ice Minimum Extent (million square km)")
+# Create a time series plot of the first differenced data
+plot(first_diff_arctic_sea_ice,
+     type = "l",
+     col = "blue",
+     main = "First Differenced Arctic Sea Ice Minimum Extent Time Series",
+     xlab = "Year",
+     ylab = "Differenced Arctic Sea Ice Minimum Extent (million square km)")
+# Reset the layout
+par(mfrow = c(1, 1))
+```
+
+
+```{r Stationary Tests}
+suppressWarnings({
+  adf <- adf.test(first_diff_arctic_sea_ice, alternative = "stationary")
+  pp <- pp.test(first_diff_arctic_sea_ice)
+  kpss <- kpss.test(first_diff_arctic_sea_ice, null = "Level")
+})
+
+# Print the test results without the warnings
+adf
+pp
+kpss
+```
+
+
+```{r}
+# Plot the ACF of the first differenced time series
+acf(first_diff_arctic_sea_ice, main = "ACF of the First Difference")
+# Plot the PACF of the first differenced time series
+pacf(first_diff_arctic_sea_ice, main = "PACF of the First Difference")
+# {ARIMA(1,1, 1), ARMA(2,1,1), ARMA(2,1,2), ARMA(3,1,1), ARMA(3,1,2)}
+```
+
+
+
+```{r Model Selection: EACF table}
+# EACF
+eacf(first_diff_arctic_sea_ice, ar.max = 10, ma.max = 10)
+# {ARIMA(0,1,1), ARIMA(0,1,2), ARIMA(1,1,1), ARIMA(1,1,2)}
+```
+
+```{r BIC Table}
+res = armasubsets(y=first_diff_arctic_sea_ice,nar=10,nma=10,y.name='p',ar.method='ols')
+plot(res)
+# {ARIMA(1,1,9), ARIMA(6,1,9)}
+```
+
+
+
+```{r Model Fitting Parameter Estimations, BIC and AIC scores}
+fit_arima_models <- function(time_series, arima_orders) {
+  models <- list()
+  for (order in arima_orders) {
+    model <- arima(time_series, order = order, method = 'CSS-ML')
+    coef_test <- coeftest(model)
+    aic_score <- AIC(model)
+    bic_score <- BIC(model)
+    models[[paste("ARIMA(", paste(order, collapse = ","), ")", sep = "")]] <- list(model = model, coef_test = coef_test, AIC = aic_score, BIC = bic_score)
+  }
+  return(models)
+}
+
+# Define the list of ARIMA models
+arima_orders <- list(
+  c(1, 1, 1), c(2, 1, 1), c(2, 1, 2), c(3, 1, 1), c(3, 1, 2),
+  c(0, 1, 1), c(0, 1, 2), c(1, 1, 1), c(1, 1, 2),
+  c(1, 1, 9), c(6, 1, 9)
+)
+arctic_sea_ice_models <- fit_arima_models(arctic_sea_ice_ts, arima_orders)
+
+# Accessing the models and their coefficient tests, AIC and BIC scores:
+for (model_name in names(arctic_sea_ice_models)) {
+  cat("Model:", model_name, "\n")
+  cat("Coefficient test:\n")
+  print(arctic_sea_ice_models[[model_name]]$coef_test)
+  cat("AIC:", arctic_sea_ice_models[[model_name]]$AIC, "\n")
+  cat("BIC:", arctic_sea_ice_models[[model_name]]$BIC, "\n\n")
+}
+```
+
+```
+``
+
+```{r "ME", "RMSE", "MAE", "MPE", "MAPE", "MASE", "ACF1" scores}
+# Function to fit ARIMA models and compute accuracy
+fit_arima_models <- function(data, arima_orders) {
+  models <- list()
+  accuracy_measures <- list()
+  
+  for (order in arima_orders) {
+    model <- Arima(data, order = order, method = 'CSS-ML')
+    models[[paste0("ARIMA(", paste(order, collapse = ","), ")")]] <- model
+    accuracy_measures[[paste0("ARIMA(", paste(order, collapse = ","), ")")]] <- accuracy(model)[1:7]
+  }
+  
+  df_accuracy <- data.frame(do.call(rbind, accuracy_measures))
+  colnames(df_accuracy) <- c("ME", "RMSE", "MAE", "MPE", "MAPE", "MASE", "ACF1")
+  
+  return(df_accuracy)
+}
+
+# Define the list of ARIMA models
+arima_orders <- list(
+  c(1, 1, 1), c(2, 1, 1), c(2, 1, 2), c(3, 1, 1), c(3, 1, 2),
+  c(0, 1, 1), c(0, 1, 2), c(1, 1, 1), c(1, 1, 2),
+  c(1, 1, 9), c(6, 1, 9)
+)
+
+# Call the function with your data and the list of ARIMA models
+accuracy_results <- fit_arima_models(arctic_sea_ice_ts, arima_orders)
+print(accuracy_results)
+
+```
+
+
+
+# We found ARIMA(1,1,2) model is the most promissing one for Diagnostic Checking
+
+```{r 4 residual plots}
+# Fit the ARIMA model
+model.112.CSSML <- arima(arctic_sea_ice_ts, order = c(1, 1, 2), method = 'CSS-ML')
+model.112.CSSMLRes <- rstandard(model.112.CSSML)
+
+# Set up the multi-panel plot layout
+par(mfrow = c(2, 2))
+
+# Time series plot of standardized residuals
+plot(model.112.CSSMLRes, xlab = 'Time', ylab = 'Standardized Residuals', type = 'o',
+     main = "Time series plot of standardized residuals", col = "blue")
+
+# Histogram of standardized residuals
+hist(model.112.CSSMLRes, ylab = 'Standardized Residuals',
+     main = "Histogram of standardized residuals", col = "blue")
+
+# QQ plot of standardized residuals
+qqnorm(model.112.CSSMLRes, main = "QQ plot of standardized residuals.", col = "blue")
+qqline(model.112.CSSMLRes, col = 2, lwd = 1, lty = 2)
+
+# ACF plot of standardized residuals
+acf(model.112.CSSMLRes, main = "ACF plot of standardized residuals.")
+
+```
+
+
+
+```{r autocorrelation test}
+Box.test(model.112.CSSMLRes, type = "Ljung-Box")
+```
+
+```{r normality test}
+shapiro.test(model.112.CSSMLRes)
+```
+
+
+```{r Forecasting consecutive 10 years}
+model.112.CSSMLA = Arima(arctic_sea_ice_ts,order=c(1,1,2),method='CSS-ML')
+model.112.CSSMLAfrc = forecast::forecast(model.112.CSSMLA, h = 10)
+plot(model.112.CSSMLAfrc)
+model.112.CSSMLAfrc
+```
+

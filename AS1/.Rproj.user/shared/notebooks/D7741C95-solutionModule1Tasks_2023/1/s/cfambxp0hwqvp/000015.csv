@@ -1,0 +1,2 @@
+"0",""
+"0","plot.ts(y , lty = 2 , type='o',ylab='Normal distributed process') # without converting the generated data to a time series object"

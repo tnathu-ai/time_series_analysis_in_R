@@ -1,0 +1,5 @@
+"0",""
+"0","y = rchisq(n, nu) # Generate random profolio from the given chi-square distribution"
+"0","plot(ts(y) , type='o',ylab='Chi-squre distributed process',"
+"0","     main = ""Time series plot of randomly generated profolio from chi-square distribution."") # converting the generated profolio to a time series object "
+"0",""

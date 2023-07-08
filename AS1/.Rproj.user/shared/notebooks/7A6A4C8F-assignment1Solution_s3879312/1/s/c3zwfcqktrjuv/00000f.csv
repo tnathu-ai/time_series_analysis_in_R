@@ -1,0 +1,16 @@
+"0","rm(list=ls()) "
+"0","library(TSA)"
+"2","
+Attaching package: ‘TSA’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    acf, arima
+
+"
+"2","The following object is masked from ‘package:utils’:
+
+    tar
+
+"

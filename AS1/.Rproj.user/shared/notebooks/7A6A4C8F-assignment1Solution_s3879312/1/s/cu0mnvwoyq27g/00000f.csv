@@ -1,0 +1,2 @@
+"0","# Create the ACF plot "
+"0","acf(ts_portfolio)"

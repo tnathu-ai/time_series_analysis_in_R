@@ -1,0 +1,4 @@
+"0",""
+"0","plot(ts(y) , type='o', ylab='Normal distributed process', "
+"0","     main = ""Time series plot of randomly generated data from normal distribution."") # converting the generated data to a time series object "
+"0",""
